@@ -736,14 +736,35 @@ class CPHT_ACF_Manager {
         $sync_required = array();
         $json_file = $this->json_dir . $this->field_group_filename;
 
+        // Enhanced logging - check if directory exists and list contents
+        cpht_plugin_log('CPHT ACF Manager: Checking sync for file: ' . $json_file);
+        cpht_plugin_log('CPHT ACF Manager: Directory exists: ' . (is_dir($this->json_dir) ? 'YES' : 'NO'));
+
+        if (is_dir($this->json_dir)) {
+            $files = scandir($this->json_dir);
+            cpht_plugin_log('CPHT ACF Manager: Directory contents: ' . print_r($files, true));
+        }
+
+        cpht_plugin_log('CPHT ACF Manager: File exists: ' . (file_exists($json_file) ? 'YES' : 'NO'));
+
         if (file_exists($json_file)) {
             $json_content = file_get_contents($json_file);
+            cpht_plugin_log('CPHT ACF Manager: JSON content length: ' . strlen($json_content));
+
             $json_group = json_decode($json_content, true);
 
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                cpht_plugin_log('CPHT ACF Manager: JSON decode error: ' . json_last_error_msg(), 'error');
+                return $sync_required;
+            }
+
             if (is_array($json_group) && isset($json_group['key'])) {
+                cpht_plugin_log('CPHT ACF Manager: JSON group key: ' . $json_group['key']);
+
                 // Get database version
                 $db_group = acf_get_field_group($json_group['key']);
                 cpht_plugin_log('CPHT ACF Manager: Checking sync status for: ' . $json_group['key']);
+                cpht_plugin_log('CPHT ACF Manager: Database group exists: ' . ($db_group ? 'YES' : 'NO'));
 
                 // If DB version doesn't exist or has a different modified time, it needs sync
                 if (!$db_group) {
@@ -753,6 +774,8 @@ class CPHT_ACF_Manager {
                     cpht_plugin_log('CPHT ACF Manager: Field group modified time mismatch, sync required');
                     cpht_plugin_log('CPHT ACF Manager: JSON modified: ' . $json_group['modified'] . ', DB modified: ' . $db_group['modified']);
                     $sync_required[] = $json_group;
+                } else {
+                    cpht_plugin_log('CPHT ACF Manager: Field group up to date, no sync required');
                 }
             } else {
                 cpht_plugin_log('CPHT ACF Manager: Invalid field group JSON structure or missing key');
@@ -761,6 +784,7 @@ class CPHT_ACF_Manager {
             cpht_plugin_log('CPHT ACF Manager: Field group JSON file not found: ' . $json_file);
         }
 
+        cpht_plugin_log('CPHT ACF Manager: Total field groups requiring sync: ' . count($sync_required));
         return $sync_required;
     }
 
