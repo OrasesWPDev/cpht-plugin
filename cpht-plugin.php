@@ -170,6 +170,135 @@ function cpht_plugin_deactivate() {
 }
 
 /**
+ * Create necessary plugin directories.
+ */
+function cpht_plugin_create_directories() {
+    // Create assets directory structure if it doesn't exist
+    $asset_dirs = array(
+        CPHT_PLUGIN_ASSETS_DIR,
+        CPHT_PLUGIN_ASSETS_DIR . 'css',
+        CPHT_PLUGIN_ASSETS_DIR . 'js',
+        CPHT_PLUGIN_ASSETS_DIR . 'images',
+    );
+
+    foreach ($asset_dirs as $dir) {
+        if (!file_exists($dir)) {
+            wp_mkdir_p($dir);
+            // Add index.php for security
+            file_put_contents($dir . '/index.php', '<?php // Silence is golden');
+        }
+    }
+
+    // Create templates directory if it doesn't exist
+    if (!file_exists(CPHT_PLUGIN_TEMPLATES_DIR)) {
+        wp_mkdir_p(CPHT_PLUGIN_TEMPLATES_DIR);
+        file_put_contents(CPHT_PLUGIN_TEMPLATES_DIR . '/index.php', '<?php // Silence is golden');
+    }
+
+    // Create includes directory if it doesn't exist
+    if (!file_exists(CPHT_PLUGIN_INCLUDES_DIR)) {
+        wp_mkdir_p(CPHT_PLUGIN_INCLUDES_DIR);
+        file_put_contents(CPHT_PLUGIN_INCLUDES_DIR . '/index.php', '<?php // Silence is golden');
+    }
+
+    // Create acf-json directory if it doesn't exist
+    $acf_json_dir = CPHT_PLUGIN_DIR . 'acf-json';
+    if (!file_exists($acf_json_dir)) {
+        wp_mkdir_p($acf_json_dir);
+        file_put_contents($acf_json_dir . '/index.php', '<?php // Silence is golden');
+    }
+}
+
+/**
+ * Get the version number to use for assets.
+ *
+ * Uses file modification time for cache busting when in development,
+ * or plugin version in production.
+ *
+ * @param string $file_path Full server path to the file
+ * @return string Version number to use
+ */
+function cpht_get_asset_version($file_path) {
+    // If the file exists, use its modification time for cache busting
+    if (file_exists($file_path)) {
+        return filemtime($file_path);
+    }
+
+    // Otherwise use the plugin version
+    return CPHT_PLUGIN_VERSION;
+}
+
+/**
+ * Enqueue admin scripts and styles.
+ */
+function cpht_plugin_admin_enqueue_scripts() {
+    // Only load on our post type edit screens
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'cpht_post') {
+        return;
+    }
+
+    // CSS
+    $css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-admin.css';
+    $css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-admin.css';
+    $css_version = cpht_get_asset_version($css_file_path);
+
+    wp_enqueue_style(
+        'cpht-admin-style',
+        $css_file_url,
+        array(),
+        $css_version
+    );
+
+    // JavaScript
+    $js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-admin.js';
+    $js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-admin.js';
+    $js_version = cpht_get_asset_version($js_file_path);
+
+    wp_enqueue_script(
+        'cpht-admin-script',
+        $js_file_url,
+        array('jquery'),
+        $js_version,
+        true
+    );
+}
+
+/**
+ * Enqueue public scripts and styles.
+ */
+function cpht_plugin_public_enqueue_scripts() {
+    if (!is_singular('cpht_post') && !is_post_type_archive('cpht_post')) {
+        return;
+    }
+
+    // CSS
+    $css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-public.css';
+    $css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-public.css';
+    $css_version = cpht_get_asset_version($css_file_path);
+
+    wp_enqueue_style(
+        'cpht-public-style',
+        $css_file_url,
+        array(),
+        $css_version
+    );
+
+    // JavaScript
+    $js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-public.js';
+    $js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-public.js';
+    $js_version = cpht_get_asset_version($js_file_path);
+
+    wp_enqueue_script(
+        'cpht-public-script',
+        $js_file_url,
+        array('jquery'),
+        $js_version,
+        true
+    );
+}
+
+/**
  * Initialize the plugin.
  * Loads required files and starts the plugin if dependencies are met.
  */
@@ -182,15 +311,38 @@ function cpht_plugin_init() {
         return;
     }
 
-    // Include required files
-    require_once CPHT_PLUGIN_INCLUDES_DIR . 'class-cpht-plugin.php';
-    require_once CPHT_PLUGIN_INCLUDES_DIR . 'class-cpht-post-type.php';
-    require_once CPHT_PLUGIN_INCLUDES_DIR . 'class-cpht-field-groups.php';
-    require_once CPHT_PLUGIN_INCLUDES_DIR . 'class-cpht-shortcode.php';
+    // Create necessary directories
+    cpht_plugin_create_directories();
+
+    // Load all PHP files from the includes directory
+    $includes_dir = CPHT_PLUGIN_INCLUDES_DIR;
+    if (is_dir($includes_dir)) {
+        $files = scandir($includes_dir);
+        foreach ($files as $file) {
+            $file_path = $includes_dir . $file;
+            if (is_file($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'php' && $file !== 'index.php') {
+                cpht_plugin_log('Loading file: ' . $file);
+                require_once $file_path;
+            }
+        }
+    } else {
+        cpht_plugin_log('Includes directory not found: ' . $includes_dir, 'error');
+        return;
+    }
 
     // Initialize the main plugin class
-    $plugin = CPHT_Plugin::get_instance();
-    $plugin->run();
+    if (class_exists('CPHT_Plugin')) {
+        $plugin = CPHT_Plugin::get_instance();
+        $plugin->run();
+    } else {
+        cpht_plugin_log('CPHT_Plugin class not found', 'error');
+    }
+
+    // Register admin scripts and styles
+    add_action('admin_enqueue_scripts', 'cpht_plugin_admin_enqueue_scripts');
+
+    // Register public scripts and styles
+    add_action('wp_enqueue_scripts', 'cpht_plugin_public_enqueue_scripts');
 
     cpht_plugin_log('Plugin initialization completed');
 }
