@@ -189,42 +189,6 @@ function cpht_get_asset_version($file_path) {
  * Enqueue admin scripts and styles.
  */
 function cpht_plugin_admin_enqueue_scripts() {
-	// Only load on our post type edit screens
-	$screen = get_current_screen();
-	if (!$screen || $screen->post_type !== 'cpht_post') {
-		return;
-	}
-
-	// CSS
-	$css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-admin.css';
-	$css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-admin.css';
-	$css_version = cpht_get_asset_version($css_file_path);
-
-	wp_enqueue_style(
-		'cpht-admin-style',
-		$css_file_url,
-		array(),
-		$css_version
-	);
-
-	// JavaScript
-	$js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-admin.js';
-	$js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-admin.js';
-	$js_version = cpht_get_asset_version($js_file_path);
-
-	wp_enqueue_script(
-		'cpht-admin-script',
-		$js_file_url,
-		array('jquery'),
-		$js_version,
-		true
-	);
-}
-
-/**
- * Enqueue admin scripts and styles.
- */
-function cpht_plugin_admin_enqueue_scripts() {
 	$screen = get_current_screen();
 
 	// Auto-detect and load all CSS files in the assets/css directory
@@ -273,6 +237,7 @@ function cpht_plugin_admin_enqueue_scripts() {
 		}
 	}
 }
+
 
 /**
  * Initialize the plugin.
