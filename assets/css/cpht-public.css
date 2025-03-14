@@ -1,0 +1,367 @@
+/**
+ * CPHT Plugin - Public CSS Styles
+ *
+ * Styles for the CPHT Posts shortcode display and filtering
+ */
+
+/* ----------------------------------------
+   1. CSS VARIABLES (CUSTOM PROPERTIES)
+   ---------------------------------------- */
+:root {
+    /* Spacing values */
+    --cpht-spacing-xs: 5px;
+    --cpht-spacing-sm: 10px;
+    --cpht-spacing-md: 20px;
+    --cpht-spacing-lg: 30px;
+    --cpht-spacing-xl: 40px;
+
+    /* Colors - Update with brand colors */
+    --cpht-primary-color: #0073aa;       /* Primary accent color */
+    --cpht-secondary-color: #f7941d;     /* Secondary accent color */
+    --cpht-text-color: #333;             /* Main text color */
+    --cpht-light-text: #666;             /* Secondary text color */
+    --cpht-bg-color: #fff;               /* Card background */
+    --cpht-border-color: #eaeaea;        /* Border color */
+    --cpht-hover-color: #f8f8f8;         /* Hover state background */
+
+    /* Typography */
+    --cpht-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --cpht-font-size-sm: 0.875rem;
+    --cpht-font-size-base: 1rem;
+    --cpht-font-size-md: 1.125rem;
+    --cpht-font-size-lg: 1.25rem;
+    --cpht-line-height: 1.6;
+}
+
+/* ----------------------------------------
+   2. GENERAL CONTAINER STYLES
+   ---------------------------------------- */
+.cpht-posts-wrapper {
+    margin-bottom: var(--cpht-spacing-lg);
+    font-family: var(--cpht-font-family);
+    color: var(--cpht-text-color);
+    line-height: var(--cpht-line-height);
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ----------------------------------------
+   3. FILTER SECTION
+   ---------------------------------------- */
+.cpht-filter-section {
+    margin-bottom: var(--cpht-spacing-lg);
+    padding: var(--cpht-spacing-md) 0;
+    text-align: center;
+}
+
+.cpht-filter-wrapper {
+    display: inline-block;
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.cpht-filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: var(--cpht-font-size-base);
+    border: 1px solid var(--cpht-border-color);
+    border-radius: 4px;
+    background-color: var(--cpht-bg-color);
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+.cpht-filter-select:focus {
+    outline: none;
+    border-color: var(--cpht-primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.2);
+}
+
+/* ----------------------------------------
+   4. GRID LAYOUT
+   ---------------------------------------- */
+.cpht-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px; /* Negative margin for grid gutter */
+}
+
+.cpht-grid-item {
+    padding: 0 15px; /* Creates gutters between items */
+    margin-bottom: var(--cpht-spacing-lg);
+    width: 100%;
+}
+
+/* Column variations */
+.cpht-columns-1 .cpht-grid-item {
+    width: 100%;
+}
+
+.cpht-columns-2 .cpht-grid-item {
+    width: 50%;
+}
+
+.cpht-columns-3 .cpht-grid-item {
+    width: 33.333%;
+}
+
+.cpht-columns-4 .cpht-grid-item {
+    width: 25%;
+}
+
+/* ----------------------------------------
+   5. CARD STYLING
+   ---------------------------------------- */
+.cpht-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cpht-bg-color);
+    border: 1px solid var(--cpht-border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cpht-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.cpht-card-image {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.cpht-thumbnail {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.cpht-card:hover .cpht-thumbnail {
+    transform: scale(1.05);
+}
+
+.cpht-card-content {
+    padding: var(--cpht-spacing-md);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cpht-card-date {
+    font-size: var(--cpht-font-size-sm);
+    color: var(--cpht-light-text);
+    margin-bottom: var(--cpht-spacing-sm);
+}
+
+.cpht-label {
+    font-weight: bold;
+    color: var(--cpht-primary-color);
+}
+
+.cpht-card-title {
+    font-size: var(--cpht-font-size-lg);
+    margin-top: 0;
+    margin-bottom: var(--cpht-spacing-sm);
+    line-height: 1.3;
+}
+
+.cpht-card-title a {
+    color: var(--cpht-text-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.cpht-card-title a:hover {
+    color: var(--cpht-primary-color);
+}
+
+.cpht-card-excerpt {
+    font-size: var(--cpht-font-size-base);
+    margin-top: auto; /* Pushes excerpt to bottom of card */
+    color: var(--cpht-light-text);
+}
+
+/* ----------------------------------------
+   5.1 CARD LINK STYLING (NEW)
+   ---------------------------------------- */
+.cpht-card-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.cpht-card-link:hover,
+.cpht-card-link:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Move hover effects from card to link */
+.cpht-card {
+    transition: box-shadow 0.2s ease;
+}
+
+.cpht-card-link:hover .cpht-card {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Remove underline from card title */
+.cpht-card-title {
+    color: var(--cpht-text-color);
+}
+
+
+/* ----------------------------------------
+   6. PAGINATION
+   ---------------------------------------- */
+.cpht-pagination {
+    text-align: center;
+    margin-top: var(--cpht-spacing-lg);
+    padding: var(--cpht-spacing-md) 0;
+}
+
+.cpht-pagination .page-numbers {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border: 1px solid var(--cpht-border-color);
+    border-radius: 3px;
+    text-decoration: none;
+    color: var(--cpht-text-color);
+    transition: all 0.2s ease;
+}
+
+.cpht-pagination .page-numbers.current {
+    background-color: var(--cpht-primary-color);
+    color: white;
+    border-color: var(--cpht-primary-color);
+}
+
+.cpht-pagination .page-numbers:not(.current):hover {
+    background-color: var(--cpht-hover-color);
+    border-color: var(--cpht-primary-color);
+}
+
+/* ----------------------------------------
+   7. LOADER ANIMATION
+   ---------------------------------------- */
+.cpht-loading {
+    position: relative;
+    min-height: 200px;
+    opacity: 0.7;
+}
+
+.cpht-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+}
+
+.cpht-loader span {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--cpht-primary-color);
+    animation: cpht-spin 1s ease-in-out infinite;
+}
+
+@keyframes cpht-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------
+   8. NO RESULTS
+   ---------------------------------------- */
+.cpht-no-results {
+    text-align: center;
+    padding: var(--cpht-spacing-lg);
+    background-color: var(--cpht-hover-color);
+    border-radius: 4px;
+    color: var(--cpht-light-text);
+    font-size: var(--cpht-font-size-md);
+}
+
+/* ----------------------------------------
+   9. UTILITY CLASSES
+   ---------------------------------------- */
+.cpht-hidden {
+    display: none;
+}
+
+.cpht-text-center {
+    text-align: center;
+}
+
+.cpht-mb-sm {
+    margin-bottom: var(--cpht-spacing-sm);
+}
+
+.cpht-mb-md {
+    margin-bottom: var(--cpht-spacing-md);
+}
+
+.cpht-mb-lg {
+    margin-bottom: var(--cpht-spacing-lg);
+}
+
+/* ----------------------------------------
+   10. RESPONSIVE STYLES
+   ---------------------------------------- */
+@media screen and (max-width: 1024px) {
+    .cpht-columns-4 .cpht-grid-item {
+        width: 33.333%; /* 4 columns becomes 3 on medium screens */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .cpht-columns-3 .cpht-grid-item,
+    .cpht-columns-4 .cpht-grid-item {
+        width: 50%; /* 3-4 columns become 2 on tablets */
+    }
+
+    .cpht-card-title {
+        font-size: var(--cpht-font-size-md);
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .cpht-columns-2 .cpht-grid-item,
+    .cpht-columns-3 .cpht-grid-item,
+    .cpht-columns-4 .cpht-grid-item {
+        width: 100%; /* All become 1 column on mobile */
+    }
+
+    .cpht-filter-wrapper {
+        max-width: 100%;
+    }
+
+    .cpht-card-content {
+        padding: var(--cpht-spacing-sm);
+    }
+
+    .cpht-pagination .page-numbers {
+        padding: 6px 10px;
+        font-size: var(--cpht-font-size-sm);
+    }
+}
