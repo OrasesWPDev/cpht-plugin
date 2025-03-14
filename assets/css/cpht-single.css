@@ -47,7 +47,23 @@
    3. HEADER SECTION
    ---------------------------------------- */
 .cpht-post-header {
-    margin-bottom: var(--cpht-spacing-lg);
+    margin-bottom: var(--cpht-spacing-xl); /* Increased spacing */
+    padding-bottom: var(--cpht-spacing-md);
+}
+
+/* Breadcrumb styling */
+.cpht-breadcrumbs a,
+.cpht-breadcrumbs span,
+.cpht-breadcrumbs .breadcrumb_last,
+.cpht-breadcrumbs .cpht-breadcrumb-divider {
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.cpht-breadcrumbs a:hover {
+    text-decoration: underline;
+    opacity: 0.9;
 }
 
 /* ----------------------------------------
@@ -127,6 +143,7 @@
     text-align: right;
 }
 
+
 /* ----------------------------------------
    7. NAVIGATION
    ---------------------------------------- */
@@ -160,16 +177,27 @@
 
 .cpht-nav-button a {
     display: inline-block;
+    width: 100%;
     padding: 10px 15px;
-    background-color: var(--cpht-primary-color);
+    background-color: #f98e2b; /* Orange button color */
     color: white;
     border-radius: 4px;
     text-decoration: none;
+    text-align: center;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 25px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
     transition: all 0.3s ease;
+    min-height: 60px;
+    line-height: 1.2;
 }
 
 .cpht-nav-button a:hover {
-    background-color: var(--cpht-secondary-color);
+    background-color: rgba(255, 255, 255, 0.64);
+    border: 1px solid #f98e2b;
+    color: #f98e2b;
     transform: translateY(-2px);
 }
 
@@ -187,6 +215,23 @@
     .cpht-nav-previous,
     .cpht-nav-next {
         text-align: center;
+    }
+
+    .cpht-nav-button {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: var(--cpht-spacing-sm);
+        text-align: center;
+    }
+
+    .cpht-nav-previous,
+    .cpht-nav-next {
+        text-align: center;
+    }
+
+    .cpht-nav-button a {
+        font-size: 20px;
+        min-height: 50px;
     }
 }
 

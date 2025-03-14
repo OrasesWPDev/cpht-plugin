@@ -62,7 +62,6 @@
   },
   "supports": [
     "title",
-    "editor",
     "page-attributes",
     "thumbnail",
     "custom-fields"

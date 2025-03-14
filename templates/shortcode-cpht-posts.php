@@ -23,15 +23,18 @@ if (!defined('ABSPATH')) {
     <!-- Filter Section -->
 	<?php if (!empty($categories)) : ?>
         <div class="cpht-filter-section">
-            <div class="cpht-filter-wrapper">
-                <select id="cpht-category-filter" class="cpht-filter-select" data-nonce="<?php echo wp_create_nonce('cpht_filter_nonce'); ?>">
-                    <option value="">Filter by Category</option>
-					<?php foreach ($categories as $category) : ?>
-                        <option value="<?php echo esc_attr($category->slug); ?>" <?php selected($category_filter, $category->slug); ?>>
-							<?php echo esc_html($category->name); ?>
-                        </option>
-					<?php endforeach; ?>
-                </select>
+            <div class="cpht-filter-container">
+                <div class="cpht-filter-label">FILTER STORIES</div>
+                <div class="cpht-filter-wrapper">
+                    <select id="cpht-category-filter" class="cpht-filter-select" data-nonce="<?php echo wp_create_nonce('cpht_filter_nonce'); ?>">
+                        <option value="">Filter by Category</option>
+						<?php foreach ($categories as $category) : ?>
+                            <option value="<?php echo esc_attr($category->slug); ?>" <?php selected($category_filter, $category->slug); ?>>
+								<?php echo esc_html($category->name); ?>
+                            </option>
+						<?php endforeach; ?>
+                    </select>
+                </div>
             </div>
         </div>
 	<?php endif; ?>

@@ -222,37 +222,56 @@ function cpht_plugin_admin_enqueue_scripts() {
 }
 
 /**
- * Enqueue public scripts and styles.
+ * Enqueue admin scripts and styles.
  */
-function cpht_plugin_public_enqueue_scripts() {
-	if (!is_singular('cpht_post') && !is_post_type_archive('cpht_post')) {
-		return;
+function cpht_plugin_admin_enqueue_scripts() {
+	$screen = get_current_screen();
+
+	// Auto-detect and load all CSS files in the assets/css directory
+	$css_dir = CPHT_PLUGIN_ASSETS_DIR . 'css/';
+	if (is_dir($css_dir)) {
+		$css_files = glob($css_dir . '*.css');
+		foreach ($css_files as $css_file) {
+			$file_name = basename($css_file, '.css');
+			$css_url = CPHT_PLUGIN_ASSETS_URL . 'css/' . basename($css_file);
+			$css_version = cpht_get_asset_version($css_file);
+
+			// Only load certain CSS files on specific screens
+			if (strpos($file_name, 'admin') !== false) {
+				// Admin CSS - load on all admin screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif (strpos($file_name, 'public') !== false && $screen && $screen->post_type === 'cpht_post') {
+				// Public CSS - only load on our post type screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif (strpos($file_name, 'single') !== false && $screen && $screen->post_type === 'cpht_post') {
+				// Single post CSS - only load on our post type screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif ($screen && $screen->id === 'cpht_post_page_cpht-plugin-help' && strpos($file_name, 'help') !== false) {
+				// Help CSS - only load on our help page
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			}
+		}
 	}
 
-	// CSS
-	$css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-public.css';
-	$css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-public.css';
-	$css_version = cpht_get_asset_version($css_file_path);
+	// Auto-detect and load all JS files in the assets/js directory
+	$js_dir = CPHT_PLUGIN_ASSETS_DIR . 'js/';
+	if (is_dir($js_dir)) {
+		$js_files = glob($js_dir . '*.js');
+		foreach ($js_files as $js_file) {
+			$file_name = basename($js_file, '.js');
+			$js_url = CPHT_PLUGIN_ASSETS_URL . 'js/' . basename($js_file);
+			$js_version = cpht_get_asset_version($js_file);
 
-	wp_enqueue_style(
-		'cpht-public-style',
-		$css_file_url,
-		array(),
-		$css_version
-	);
-
-	// JavaScript
-	$js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-public.js';
-	$js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-public.js';
-	$js_version = cpht_get_asset_version($js_file_path);
-
-	wp_enqueue_script(
-		'cpht-public-script',
-		$js_file_url,
-		array('jquery'),
-		$js_version,
-		true
-	);
+			// Only load certain JS files on specific screens
+			if (strpos($file_name, 'admin') !== false) {
+				// Admin JS - load on all admin screens
+				wp_enqueue_script('cpht-' . $file_name, $js_url, array('jquery'), $js_version, true);
+			} elseif ($screen && $screen->post_type === 'cpht_post') {
+				// Post type specific JS - only load on our post type screens
+				wp_enqueue_script('cpht-' . $file_name, $js_url, array('jquery'), $js_version, true);
+			}
+		}
+	}
 }
 
 /**
@@ -290,6 +309,12 @@ function cpht_plugin_init() {
 		$plugin->run();
 	} else {
 		cpht_plugin_log('CPHT_Plugin class not found', 'error');
+	}
+
+	// Initialize help documentation if we're in admin
+	if (is_admin() && class_exists('CPHT_Help')) {
+		CPHT_Help::get_instance();
+		cpht_plugin_log('CPHT Help documentation initialized');
 	}
 
 	// Register admin scripts and styles

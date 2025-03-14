@@ -65,26 +65,26 @@ get_header();
 							</div>
 						<?php endif; ?>
 
-						<!-- Post Navigation -->
-						<nav class="cpht-post-navigation">
-							<div class="cpht-nav-links">
-								<div class="cpht-nav-button cpht-nav-previous">
+                        <!-- Post Navigation -->
+                        <nav class="cpht-post-navigation container">
+                            <div class="cpht-nav-links">
+                                <div class="cpht-nav-button cpht-nav-previous">
 									<?php if (get_previous_post()) : ?>
 										<?php previous_post_link('%link', 'See Previous'); ?>
 									<?php endif; ?>
-								</div>
+                                </div>
 
-								<div class="cpht-nav-button cpht-nav-all">
-									<a href="<?php echo esc_url(home_url('/cphtstrong/')); ?>">See All</a>
-								</div>
+                                <div class="cpht-nav-button cpht-nav-all">
+                                    <a href="<?php echo esc_url(home_url('/cphtstrong/')); ?>">See All</a>
+                                </div>
 
-								<div class="cpht-nav-button cpht-nav-next">
+                                <div class="cpht-nav-button cpht-nav-next">
 									<?php if (get_next_post()) : ?>
 										<?php next_post_link('%link', 'See Next'); ?>
 									<?php endif; ?>
-								</div>
-							</div>
-						</nav>
+                                </div>
+                            </div>
+                        </nav>
 
 					<?php endwhile; ?>
 				</article>
