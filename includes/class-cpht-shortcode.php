@@ -218,8 +218,11 @@ class CPHT_Shortcode {
 	 * @since 1.0.0
 	 */
 	public function ajax_filter_posts() {
+		cpht_plugin_log('AJAX filter_posts called');
+
 		// Verify nonce
 		if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'cpht_filter_nonce')) {
+			cpht_plugin_log('AJAX security check failed - invalid nonce');
 			wp_send_json_error(array('message' => 'Security check failed'));
 			die();
 		}
@@ -228,6 +231,8 @@ class CPHT_Shortcode {
 		$category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
 		$paged = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
 		$columns = isset($_POST['columns']) ? absint($_POST['columns']) : 3;
+
+		cpht_plugin_log('AJAX parameters - category: ' . $category . ', page: ' . $paged . ', columns: ' . $columns);
 
 		// Build query arguments
 		$query_args = array(
@@ -240,6 +245,7 @@ class CPHT_Shortcode {
 
 		// Add category filter ONLY if category is not empty
 		if (!empty($category)) {
+			cpht_plugin_log('AJAX adding category filter for: ' . $category);
 			$query_args['tax_query'] = array(
 				array(
 					'taxonomy' => 'category',
@@ -247,10 +253,13 @@ class CPHT_Shortcode {
 					'terms' => $category,
 				),
 			);
+		} else {
+			cpht_plugin_log('AJAX category is empty, showing all posts');
 		}
 
 		// Run the query
 		$posts_query = new WP_Query($query_args);
+		cpht_plugin_log('AJAX query found ' . $posts_query->found_posts . ' posts');
 
 		// Start output buffering to capture template output
 		ob_start();
@@ -336,8 +345,10 @@ class CPHT_Shortcode {
 
 		// Get the buffered content
 		$content = ob_get_clean();
+		cpht_plugin_log('AJAX generated content length: ' . strlen($content));
 
 		// Send the response
+		cpht_plugin_log('AJAX sending success response');
 		wp_send_json_success(array(
 			'content' => $content,
 			'found_posts' => $posts_query->found_posts,
