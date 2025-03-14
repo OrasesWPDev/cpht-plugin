@@ -50,6 +50,9 @@ class CPHT_Shortcode {
 		// Register the main shortcode
 		add_shortcode($this->shortcode_tag, array($this, 'process_shortcode'));
 
+		// Register the breadcrumbs shortcode
+		add_shortcode('cpht_breadcrumbs', array($this, 'breadcrumbs_shortcode'));
+
 		// Add query vars for pagination and filtering
 		add_filter('query_vars', array($this, 'add_query_vars'));
 
@@ -288,7 +291,6 @@ class CPHT_Shortcode {
 										<?php the_post_thumbnail('medium', array('class' => 'cpht-thumbnail')); ?>
                                     </div>
 								<?php endif; ?>
-
                                 <div class="cpht-card-content">
 									<?php if (!empty($date)) : ?>
                                         <div class="cpht-card-date">
@@ -311,7 +313,6 @@ class CPHT_Shortcode {
                     </div>
 				<?php endwhile; ?>
             </div>
-
             <!-- Pagination Section -->
 			<?php if ($posts_query->max_num_pages > 1) : ?>
                 <div class="cpht-pagination">
@@ -347,5 +348,40 @@ class CPHT_Shortcode {
 		));
 
 		die();
+	}
+
+	/**
+	 * Breadcrumbs shortcode implementation
+	 *
+	 * @since 1.0.0
+	 * @return string HTML markup for breadcrumbs
+	 */
+	public function breadcrumbs_shortcode() {
+		ob_start();
+
+		$home_url = home_url();
+		$home_label = __('Home', 'cpht-plugin');
+		$archive_url = home_url('cphtstrong');
+		$archive_label = __('CPhT Strong', 'cpht-plugin');
+
+		// Start breadcrumbs container
+		echo '<div class="cpht-breadcrumbs">';
+
+		// Home link
+		echo '<a href="' . esc_url($home_url) . '">' . esc_html($home_label) . '</a>';
+		echo '<span class="cpht-breadcrumb-divider">/</span>';
+
+		// Always add the archive link, regardless of page type
+		echo '<a href="' . esc_url($archive_url) . '">' . esc_html($archive_label) . '</a>';
+
+		// For single posts, add the post title
+		if (is_singular('cpht_post')) {
+			echo '<span class="cpht-breadcrumb-divider">/</span>';
+			echo '<span class="breadcrumb_last">' . get_the_title() . '</span>';
+		}
+
+		echo '</div>';
+
+		return ob_get_clean();
 	}
 }
