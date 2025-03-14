@@ -8,91 +8,106 @@
  */
 class CPHT_Plugin {
 
-    /**
-     * The singleton instance of this class.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      CPHT_Plugin    $instance    The single instance of the class.
-     */
-    private static $instance = null;
+	/**
+	 * The singleton instance of this class.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      CPHT_Plugin    $instance    The single instance of the class.
+	 */
+	private static $instance = null;
 
-    /**
-     * The post type instance.
-     *
-     * @since    1.0.0
-     * @access   protected
-     * @var      CPHT_Post_Type    $post_type    Handles custom post type registration.
-     */
-    protected $post_type;
+	/**
+	 * The post type instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      CPHT_Post_Type    $post_type    Handles custom post type registration.
+	 */
+	protected $post_type;
 
-    /**
-     * The ACF Manager instance.
-     *
-     * @since    1.0.0
-     * @access   protected
-     * @var      CPHT_ACF_Manager    $acf_manager    Handles ACF integration.
-     */
-    protected $acf_manager;
+	/**
+	 * The ACF Manager instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      CPHT_ACF_Manager    $acf_manager    Handles ACF integration.
+	 */
+	protected $acf_manager;
 
-    /**
-     * Main CPHT_Plugin Instance.
-     *
-     * @since    1.0.0
-     * @return CPHT_Plugin - Main instance.
-     */
-    public static function get_instance() {
-        cpht_plugin_log('Getting plugin instance');
-        if (is_null(self::$instance)) {
-            cpht_plugin_log('Creating new plugin instance');
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
+	/**
+	 * The Shortcode instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      CPHT_Shortcode    $shortcode    Handles shortcode functionality.
+	 */
+	protected $shortcode;
 
-    /**
-     * Initialize the class and set its properties.
-     *
-     * @since    1.0.0
-     */
-    private function __construct() {
-        cpht_plugin_log('Plugin constructor started');
-        $this->setup_dependencies();
-        cpht_plugin_log('Plugin constructor completed');
-    }
+	/**
+	 * Main CPHT_Plugin Instance.
+	 *
+	 * @since    1.0.0
+	 * @return CPHT_Plugin - Main instance.
+	 */
+	public static function get_instance() {
+		cpht_plugin_log('Getting plugin instance');
+		if (is_null(self::$instance)) {
+			cpht_plugin_log('Creating new plugin instance');
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
-    /**
-     * Setup plugin dependencies.
-     *
-     * @since    1.0.0
-     * @access   private
-     */
-    private function setup_dependencies() {
-        cpht_plugin_log('Setting up dependencies');
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 */
+	private function __construct() {
+		cpht_plugin_log('Plugin constructor started');
+		$this->setup_dependencies();
+		cpht_plugin_log('Plugin constructor completed');
+	}
 
-        // Initialize components
-        $this->post_type = new CPHT_Post_Type();
-        cpht_plugin_log('Post Type component initialized');
+	/**
+	 * Setup plugin dependencies.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function setup_dependencies() {
+		cpht_plugin_log('Setting up dependencies');
 
-        $this->acf_manager = CPHT_ACF_Manager::get_instance();
-        cpht_plugin_log('ACF Manager component initialized');
-    }
+		// Initialize components
+		$this->post_type = new CPHT_Post_Type();
+		cpht_plugin_log('Post Type component initialized');
 
-    /**
-     * Run the plugin functionalities.
-     *
-     * @since    1.0.0
-     */
-    public function run() {
-        cpht_plugin_log('Plugin run started');
+		$this->acf_manager = CPHT_ACF_Manager::get_instance();
+		cpht_plugin_log('ACF Manager component initialized');
 
-        // Initialize various components
-        cpht_plugin_log('Registering post type');
-        $this->post_type->register();
+		$this->shortcode = new CPHT_Shortcode();
+		cpht_plugin_log('Shortcode component initialized');
+	}
 
-        cpht_plugin_log('Registering ACF Manager');
-        $this->acf_manager->register();
+	/**
+	 * Run the plugin functionalities.
+	 *
+	 * @since    1.0.0
+	 */
+	public function run() {
+		cpht_plugin_log('Plugin run started');
 
-        cpht_plugin_log('Plugin run completed');
-    }
+		// Initialize various components
+		cpht_plugin_log('Registering post type');
+		$this->post_type->register();
+
+		cpht_plugin_log('Registering ACF Manager');
+		$this->acf_manager->register();
+
+		cpht_plugin_log('Registering shortcode');
+		$this->shortcode->register();
+
+		cpht_plugin_log('Plugin run completed');
+	}
 }
