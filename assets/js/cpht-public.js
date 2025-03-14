@@ -45,17 +45,25 @@
         // Handle filter dropdown change
         handleFilterChange: function(e) {
             var selectedCategory = this.$filterSelect.val();
+            // Ensure empty string handling is consistent for "Filter by Category" option
+            if (selectedCategory === null || selectedCategory === undefined) {
+                selectedCategory = '';
+            }
             this.loadPosts(selectedCategory, 1); // Reset to page 1 when changing category
         },
 
         // Handle browser back/forward buttons
         handlePopState: function(e) {
-            if (e.originalEvent.state) {
+            if (e.originalEvent && e.originalEvent.state) {
                 var state = e.originalEvent.state;
-                this.loadPosts(state.category, state.page, false); // Don't push state again
+                // Ensure category is defined and provide fallback
+                var category = state.category !== undefined ? state.category : '';
+                var page = state.page || 1;
+
+                this.loadPosts(category, page, false); // Don't push state again
 
                 // Update filter dropdown to match state
-                this.$filterSelect.val(state.category);
+                this.$filterSelect.val(category);
             }
         },
 
@@ -68,7 +76,7 @@
             var page = this.getParameterByName('paged', href) || this.getParameterByName('page', href) || 1;
 
             // Get current category
-            var category = this.$filterSelect.val();
+            var category = this.$filterSelect.val() || '';
 
             // Load the posts for this page
             this.loadPosts(category, page);
@@ -92,7 +100,7 @@
             // Prepare the data
             var data = {
                 action: 'cpht_filter_posts',
-                category: category,
+                category: category, // Will be empty string for "Filter by Category"
                 paged: page,
                 columns: this.$postsGrid.attr('class').match(/cpht-columns-(\d)/)[1] || 3,
                 nonce: nonce

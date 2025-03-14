@@ -51,16 +51,38 @@
    3. FILTER SECTION
    ---------------------------------------- */
 .cpht-filter-section {
-    margin-bottom: var(--cpht-spacing-lg);
+    background-color: #F4F4F4;
     padding: var(--cpht-spacing-md) 0;
-    text-align: center;
+    padding-top: 30px; /* Added top padding */
+    margin-bottom: var(--cpht-spacing-lg);
+    text-align: center; /* Helps with general alignment */
+}
+
+.cpht-filter-container {
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: space-between; /* Space elements evenly */
+    max-width: 600px; /* Limit container width for better spacing */
+    margin: 0 auto; /* Center the container itself */
+    padding: 0 20px; /* Add some padding so elements aren't flush with edges */
+}
+
+.cpht-filter-label {
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #f98e2b; /* Orange background */
+    color: white; /* White text */
+    padding: 12px 15px; /* Increased padding to match the dropdown height */
+    flex-shrink: 0; /* Prevent label from shrinking */
+    margin: 0; /* Remove any default margins */
+    display: inline-block; /* Changed from flex to inline-block */
 }
 
 .cpht-filter-wrapper {
-    display: inline-block;
     position: relative;
-    max-width: 400px;
-    margin: 0 auto;
+    width: 300px; /* Wider dropdown - adjust as needed */
+    max-width: 100%; /* Prevent overflow on mobile */
+    margin: 0; /* Remove any default margins */
 }
 
 .cpht-filter-select {
@@ -68,7 +90,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     width: 100%;
-    padding: 10px 15px;
+    padding: 12px 15px; /* Increased padding to match button */
     font-size: var(--cpht-font-size-base);
     border: 1px solid var(--cpht-border-color);
     border-radius: 4px;
@@ -78,38 +100,21 @@
     background-repeat: no-repeat;
     background-position: right 10px center;
     padding-right: 30px;
+    box-sizing: border-box; /* Ensure padding is included in height calculation */
+}
+
+/* Additional style to ensure both elements have the same effective height */
+.cpht-filter-select,
+.cpht-filter-label {
+    height: 46px; /* Set same fixed height for both elements */
+    box-sizing: border-box; /* Ensure padding is included in height calculation */
+    vertical-align: middle; /* Align vertically */
 }
 
 .cpht-filter-select:focus {
     outline: none;
     border-color: var(--cpht-primary-color);
     box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.2);
-}
-
-/* Filter section with background color and label */
-.cpht-filter-section {
-    background-color: #F4F4F4;
-    padding: var(--cpht-spacing-md) 0;
-    margin-bottom: var(--cpht-spacing-lg);
-}
-
-.cpht-filter-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.cpht-filter-label {
-    font-weight: bold;
-    margin-right: var(--cpht-spacing-md);
-    text-transform: uppercase;
-}
-
-.cpht-filter-wrapper {
-    position: relative;
-    min-width: 200px;
 }
 
 /* ----------------------------------------
@@ -398,5 +403,18 @@
     .cpht-pagination .page-numbers {
         padding: 6px 10px;
         font-size: var(--cpht-font-size-sm);
+    }
+}
+
+/* Make sure mobile view stacks the items properly */
+@media screen and (max-width: 576px) {
+    .cpht-filter-container {
+        flex-direction: column;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .cpht-filter-wrapper {
+        width: 250px; /* Slightly narrower on mobile but still wider than original */
     }
 }

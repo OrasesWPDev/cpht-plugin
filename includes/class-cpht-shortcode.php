@@ -238,7 +238,7 @@ class CPHT_Shortcode {
 			'order' => 'DESC',
 		);
 
-		// Add category filter if specified
+		// Add category filter ONLY if category is not empty
 		if (!empty($category)) {
 			$query_args['tax_query'] = array(
 				array(
@@ -294,17 +294,15 @@ class CPHT_Shortcode {
                                 <div class="cpht-card-content">
 									<?php if (!empty($date)) : ?>
                                         <div class="cpht-card-date">
-                                            <span class="cpht-label">Date:</span> <?php echo esc_html($date); ?>
+											<?php echo esc_html($date); ?>
                                         </div>
 									<?php endif; ?>
-
                                     <h3 class="cpht-card-title">
 										<?php the_title(); ?>
                                     </h3>
-
 									<?php if (!empty($excerpt)) : ?>
                                         <div class="cpht-card-excerpt">
-                                            <span class="cpht-label">Excerpt:</span> <?php echo esc_html($excerpt); ?>
+											<?php echo esc_html($excerpt); ?>
                                         </div>
 									<?php endif; ?>
                                 </div>
@@ -328,7 +326,6 @@ class CPHT_Shortcode {
 					?>
                 </div>
 			<?php endif; ?>
-
 			<?php wp_reset_postdata(); ?>
 		<?php else : ?>
             <div class="cpht-no-results">

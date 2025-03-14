@@ -26,22 +26,22 @@ get_header();
 				<article id="cpht-post-<?php the_ID(); ?>" <?php post_class('cpht-post'); ?>>
 					<?php while (have_posts()) : the_post(); ?>
 
-						<!-- Excerpt Section -->
+                        <!-- Excerpt Section -->
 						<?php if (function_exists('get_field') && $excerpt = get_field('excerpt')) : ?>
-							<div class="cpht-post-excerpt-section">
-								<div class="cpht-post-excerpt">
-									<span class="cpht-label">Excerpt:</span> <?php echo esc_html($excerpt); ?>
-								</div>
-							</div>
+                            <div class="cpht-post-excerpt-section">
+                                <div class="cpht-post-excerpt">
+									<?php echo esc_html($excerpt); ?>
+                                </div>
+                            </div>
 						<?php endif; ?>
 
-						<!-- Date Section -->
+                        <!-- Date Section -->
 						<?php if (function_exists('get_field') && $date = get_field('date')) : ?>
-							<div class="cpht-post-date-section">
-								<div class="cpht-post-date">
-									<span class="cpht-label">Date:</span> <?php echo esc_html($date); ?>
-								</div>
-							</div>
+                            <div class="cpht-post-date-section">
+                                <div class="cpht-post-date">
+									<?php echo esc_html($date); ?>
+                                </div>
+                            </div>
 						<?php endif; ?>
 
 						<!-- Content Sections -->

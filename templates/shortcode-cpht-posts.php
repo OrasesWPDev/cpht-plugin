@@ -60,7 +60,7 @@ if (!defined('ABSPATH')) {
                                 <div class="cpht-card-content">
 									<?php if (!empty($date)) : ?>
                                         <div class="cpht-card-date">
-                                            <span class="cpht-label">Date:</span> <?php echo esc_html($date); ?>
+											<?php echo esc_html($date); ?>
                                         </div>
 									<?php endif; ?>
                                     <h3 class="cpht-card-title">
@@ -68,7 +68,7 @@ if (!defined('ABSPATH')) {
                                     </h3>
 									<?php if (!empty($excerpt)) : ?>
                                         <div class="cpht-card-excerpt">
-                                            <span class="cpht-label">Excerpt:</span> <?php echo esc_html($excerpt); ?>
+											<?php echo esc_html($excerpt); ?>
                                         </div>
 									<?php endif; ?>
                                 </div>
