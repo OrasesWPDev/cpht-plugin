@@ -72,7 +72,9 @@
     text-transform: uppercase;
     background-color: #f98e2b; /* Orange background */
     color: white; /* White text */
+
     padding: 10px 15px; /* Increased padding to match the dropdown height */
+
     flex-shrink: 0; /* Prevent label from shrinking */
     margin: 0; /* Remove any default margins */
     display: inline-block; /* Changed from flex to inline-block */
@@ -83,7 +85,7 @@
     width: 300px; /* Wider dropdown - adjust as needed */
     max-width: 100%; /* Prevent overflow on mobile */
     margin: 0; /* Remove any default margins */
-	height: 46px;
+   height: 46px;
 }
 
 .cpht-filter-select {
@@ -420,3 +422,4 @@
         width: 250px; /* Slightly narrower on mobile but still wider than original */
     }
 }
+

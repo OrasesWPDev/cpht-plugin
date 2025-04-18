@@ -50,6 +50,9 @@ class CPHT_Shortcode {
 		// Register the main shortcode
 		add_shortcode($this->shortcode_tag, array($this, 'process_shortcode'));
 
+		// Register the breadcrumbs shortcode
+		add_shortcode('cpht_breadcrumbs', array($this, 'breadcrumbs_shortcode'));
+
 		// Add query vars for pagination and filtering
 		add_filter('query_vars', array($this, 'add_query_vars'));
 
@@ -215,137 +218,190 @@ class CPHT_Shortcode {
 	 * @since 1.0.0
 	 */
 	public function ajax_filter_posts() {
-		// Verify nonce
-		if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'cpht_filter_nonce')) {
-			wp_send_json_error(array('message' => 'Security check failed'));
-			die();
+		// Make sure no output has occurred before this point
+		if (ob_get_level()) {
+			ob_clean();
 		}
 
-		// Get filter parameters
-		$category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
-		$paged = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
-		$columns = isset($_POST['columns']) ? absint($_POST['columns']) : 3;
+		cpht_plugin_log('AJAX filter_posts called');
 
-		// Build query arguments
-		$query_args = array(
-			'post_type' => 'cpht_post',
-			'posts_per_page' => get_option('posts_per_page', 9),
-			'paged' => $paged,
-			'orderby' => 'date',
-			'order' => 'DESC',
-		);
+		try {
+			// Verify nonce
+			if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'cpht_filter_nonce')) {
+				cpht_plugin_log('AJAX security check failed - invalid nonce');
+				wp_send_json_error(array('message' => 'Security check failed'));
+				die();
+			}
 
-		// Add category filter if specified
-		if (!empty($category)) {
-			$query_args['tax_query'] = array(
-				array(
-					'taxonomy' => 'category',
-					'field' => 'slug',
-					'terms' => $category,
-				),
+			// Get filter parameters
+			$category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
+			$paged = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
+			$columns = isset($_POST['columns']) ? absint($_POST['columns']) : 3;
+
+			cpht_plugin_log('AJAX parameters - category: ' . $category . ', page: ' . $paged . ', columns: ' . $columns);
+
+			// Build query arguments
+			$query_args = array(
+				'post_type' => 'cpht_post',
+				'posts_per_page' => get_option('posts_per_page', 9),
+				'paged' => $paged,
+				'orderby' => 'date',
+				'order' => 'DESC',
 			);
-		}
 
-		// Run the query
-		$posts_query = new WP_Query($query_args);
+			// Add category filter ONLY if category is not empty
+			if (!empty($category)) {
+				cpht_plugin_log('AJAX adding category filter for: ' . $category);
+				$query_args['tax_query'] = array(
+					array(
+						'taxonomy' => 'category',
+						'field' => 'slug',
+						'terms' => $category,
+					),
+				);
+			} else {
+				cpht_plugin_log('AJAX category is empty, showing all posts');
+			}
 
-		// Start output buffering to capture template output
-		ob_start();
+			// Run the query
+			$posts_query = new WP_Query($query_args);
+			cpht_plugin_log('AJAX query found ' . $posts_query->found_posts . ' posts');
 
-		// Get all categories for the filter dropdown
-		$categories = get_categories(array(
-			'taxonomy' => 'category',
-			'hide_empty' => true,
-			'object_ids' => $this->get_post_type_ids('cpht_post'),
-		));
+			// Start output buffering to capture template output
+			ob_start();
 
-		$template_args = array(
-			'posts_query' => $posts_query,
-			'columns' => $columns,
-			'categories' => $categories,
-			'category_filter' => $category,
-			'shortcode_atts' => array(),
-		);
+			// Get all categories for the filter dropdown
+			$categories = get_categories(array(
+				'taxonomy' => 'category',
+				'hide_empty' => true,
+				'object_ids' => $this->get_post_type_ids('cpht_post'),
+			));
 
-		// Extract variables for the template
-		extract($template_args);
+			$template_args = array(
+				'posts_query' => $posts_query,
+				'columns' => $columns,
+				'categories' => $categories,
+				'category_filter' => $category,
+				'shortcode_atts' => array(),
+			);
 
-		// Include content part of the template (posts grid and pagination only)
-		?>
-        <!-- Posts Grid -->
-		<?php if ($posts_query->have_posts()) : ?>
-            <div class="cpht-grid cpht-columns-<?php echo esc_attr($columns); ?>">
-				<?php while ($posts_query->have_posts()) : $posts_query->the_post();
-					// Get ACF fields
-					$date = get_field('date', get_the_ID());
-					$excerpt = get_field('excerpt', get_the_ID());
-					?>
-                    <div class="cpht-grid-item">
-                        <a href="<?php the_permalink(); ?>" class="cpht-card-link">
-                            <div class="cpht-card">
-								<?php if (has_post_thumbnail()) : ?>
-                                    <div class="cpht-card-image">
-										<?php the_post_thumbnail('medium', array('class' => 'cpht-thumbnail')); ?>
+			// Extract variables for the template
+			extract($template_args);
+
+			// Include content part of the template (posts grid and pagination only)
+			?>
+            <!-- Posts Grid -->
+			<?php if ($posts_query->have_posts()) : ?>
+                <div class="cpht-grid cpht-columns-<?php echo esc_attr($columns); ?>">
+					<?php while ($posts_query->have_posts()) : $posts_query->the_post();
+						// Get ACF fields
+						$date = get_field('date', get_the_ID());
+						$excerpt = get_field('excerpt', get_the_ID());
+						?>
+                        <div class="cpht-grid-item">
+                            <a href="<?php the_permalink(); ?>" class="cpht-card-link">
+                                <div class="cpht-card">
+									<?php if (has_post_thumbnail()) : ?>
+                                        <div class="cpht-card-image">
+											<?php the_post_thumbnail('medium', array('class' => 'cpht-thumbnail')); ?>
+                                        </div>
+									<?php endif; ?>
+                                    <div class="cpht-card-content">
+										<?php if (!empty($date)) : ?>
+                                            <div class="cpht-card-date">
+												<?php echo esc_html($date); ?>
+                                            </div>
+										<?php endif; ?>
+                                        <h3 class="cpht-card-title">
+											<?php the_title(); ?>
+                                        </h3>
+										<?php if (!empty($excerpt)) : ?>
+                                            <div class="cpht-card-excerpt">
+												<?php echo esc_html($excerpt); ?>
+                                            </div>
+										<?php endif; ?>
                                     </div>
-								<?php endif; ?>
-
-                                <div class="cpht-card-content">
-									<?php if (!empty($date)) : ?>
-                                        <div class="cpht-card-date">
-                                            <span class="cpht-label">Date:</span> <?php echo esc_html($date); ?>
-                                        </div>
-									<?php endif; ?>
-
-                                    <h3 class="cpht-card-title">
-										<?php the_title(); ?>
-                                    </h3>
-
-									<?php if (!empty($excerpt)) : ?>
-                                        <div class="cpht-card-excerpt">
-                                            <span class="cpht-label">Excerpt:</span> <?php echo esc_html($excerpt); ?>
-                                        </div>
-									<?php endif; ?>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
+					<?php endwhile; ?>
+                </div>
+                <!-- Pagination Section -->
+				<?php if ($posts_query->max_num_pages > 1) : ?>
+                    <div class="cpht-pagination">
+						<?php
+						echo paginate_links(array(
+							'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+							'format' => '?paged=%#%',
+							'current' => $paged,
+							'total' => $posts_query->max_num_pages,
+							'prev_text' => '&laquo; Previous',
+							'next_text' => 'Next &raquo;',
+						));
+						?>
                     </div>
-				<?php endwhile; ?>
-            </div>
-
-            <!-- Pagination Section -->
-			<?php if ($posts_query->max_num_pages > 1) : ?>
-                <div class="cpht-pagination">
-					<?php
-					echo paginate_links(array(
-						'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
-						'format' => '?paged=%#%',
-						'current' => $paged,
-						'total' => $posts_query->max_num_pages,
-						'prev_text' => '&laquo; Previous',
-						'next_text' => 'Next &raquo;',
-					));
-					?>
+				<?php endif; ?>
+				<?php wp_reset_postdata(); ?>
+			<?php else : ?>
+                <div class="cpht-no-results">
+                    <p><?php _e('No posts found.', 'cpht-plugin'); ?></p>
                 </div>
 			<?php endif; ?>
+			<?php
 
-			<?php wp_reset_postdata(); ?>
-		<?php else : ?>
-            <div class="cpht-no-results">
-                <p><?php _e('No posts found.', 'cpht-plugin'); ?></p>
-            </div>
-		<?php endif; ?>
-		<?php
+			// Get the buffered content
+			$content = ob_get_clean();
+			cpht_plugin_log('AJAX generated content length: ' . strlen($content));
 
-		// Get the buffered content
-		$content = ob_get_clean();
+			// Send the response
+			cpht_plugin_log('AJAX sending success response');
+			wp_send_json_success(array(
+				'content' => $content,
+				'found_posts' => $posts_query->found_posts,
+				'max_pages' => $posts_query->max_num_pages,
+			));
 
-		// Send the response
-		wp_send_json_success(array(
-			'content' => $content,
-			'found_posts' => $posts_query->found_posts,
-			'max_pages' => $posts_query->max_num_pages,
-		));
+		} catch (Exception $e) {
+			cpht_plugin_log('AJAX error: ' . $e->getMessage());
+			wp_send_json_error(array('message' => 'Error: ' . $e->getMessage()));
+		}
 
+		// Always die at the end of an AJAX function
 		die();
+	}
+
+	/**
+	 * Breadcrumbs shortcode implementation
+	 *
+	 * @since 1.0.0
+	 * @return string HTML markup for breadcrumbs
+	 */
+	public function breadcrumbs_shortcode() {
+		ob_start();
+
+		$home_url = home_url();
+		$home_label = __('Home', 'cpht-plugin');
+		$archive_url = home_url('cphtstrong');
+		$archive_label = __('CPhT Strong', 'cpht-plugin');
+
+		// Start breadcrumbs container
+		echo '<div class="cpht-breadcrumbs">';
+
+		// Home link
+		echo '<a href="' . esc_url($home_url) . '">' . esc_html($home_label) . '</a>';
+		echo '<span class="cpht-breadcrumb-divider">/</span>';
+
+		// Always add the archive link, regardless of page type
+		echo '<a href="' . esc_url($archive_url) . '">' . esc_html($archive_label) . '</a>';
+
+		// For single posts, add the post title
+		if (is_singular('cpht_post')) {
+			echo '<span class="cpht-breadcrumb-divider">/</span>';
+			echo '<span class="breadcrumb_last">' . get_the_title() . '</span>';
+		}
+
+		echo '</div>';
+
+		return ob_get_clean();
 	}
 }

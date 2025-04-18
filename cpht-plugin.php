@@ -189,70 +189,113 @@ function cpht_get_asset_version($file_path) {
  * Enqueue admin scripts and styles.
  */
 function cpht_plugin_admin_enqueue_scripts() {
-	// Only load on our post type edit screens
 	$screen = get_current_screen();
-	if (!$screen || $screen->post_type !== 'cpht_post') {
-		return;
+
+	// Auto-detect and load all CSS files in the assets/css directory
+	$css_dir = CPHT_PLUGIN_ASSETS_DIR . 'css/';
+	if (is_dir($css_dir)) {
+		$css_files = glob($css_dir . '*.css');
+		foreach ($css_files as $css_file) {
+			$file_name = basename($css_file, '.css');
+			$css_url = CPHT_PLUGIN_ASSETS_URL . 'css/' . basename($css_file);
+			$css_version = cpht_get_asset_version($css_file);
+
+			// Only load certain CSS files on specific screens
+			if (strpos($file_name, 'admin') !== false) {
+				// Admin CSS - load on all admin screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif (strpos($file_name, 'public') !== false && $screen && $screen->post_type === 'cpht_post') {
+				// Public CSS - only load on our post type screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif (strpos($file_name, 'single') !== false && $screen && $screen->post_type === 'cpht_post') {
+				// Single post CSS - only load on our post type screens
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif ($screen && $screen->id === 'cpht_post_page_cpht-plugin-help' && strpos($file_name, 'help') !== false) {
+				// Help CSS - only load on our help page
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			}
+		}
 	}
 
-	// CSS
-	$css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-admin.css';
-	$css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-admin.css';
-	$css_version = cpht_get_asset_version($css_file_path);
+	// Auto-detect and load all JS files in the assets/js directory
+	$js_dir = CPHT_PLUGIN_ASSETS_DIR . 'js/';
+	if (is_dir($js_dir)) {
+		$js_files = glob($js_dir . '*.js');
+		foreach ($js_files as $js_file) {
+			$file_name = basename($js_file, '.js');
+			$js_url = CPHT_PLUGIN_ASSETS_URL . 'js/' . basename($js_file);
+			$js_version = cpht_get_asset_version($js_file);
 
-	wp_enqueue_style(
-		'cpht-admin-style',
-		$css_file_url,
-		array(),
-		$css_version
-	);
-
-	// JavaScript
-	$js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-admin.js';
-	$js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-admin.js';
-	$js_version = cpht_get_asset_version($js_file_path);
-
-	wp_enqueue_script(
-		'cpht-admin-script',
-		$js_file_url,
-		array('jquery'),
-		$js_version,
-		true
-	);
+			// Only load certain JS files on specific screens
+			if (strpos($file_name, 'admin') !== false) {
+				// Admin JS - load on all admin screens
+				wp_enqueue_script('cpht-' . $file_name, $js_url, array('jquery'), $js_version, true);
+			} elseif ($screen && $screen->post_type === 'cpht_post') {
+				// Post type specific JS - only load on our post type screens
+				wp_enqueue_script('cpht-' . $file_name, $js_url, array('jquery'), $js_version, true);
+			}
+		}
+	}
 }
 
 /**
  * Enqueue public scripts and styles.
  */
 function cpht_plugin_public_enqueue_scripts() {
-	if (!is_singular('cpht_post') && !is_post_type_archive('cpht_post')) {
+	// First, determine if we're on a relevant page
+	$is_cpht_page = is_singular('cpht_post') || is_post_type_archive('cpht_post');
+
+	// Also check if we're on a page with the shortcode
+	if (!$is_cpht_page && is_singular('page')) {
+		global $post;
+		if ($post && has_shortcode($post->post_content, 'cpht_posts')) {
+			$is_cpht_page = true;
+		}
+	}
+
+	if (!$is_cpht_page) {
 		return;
 	}
 
-	// CSS
-	$css_file_path = CPHT_PLUGIN_ASSETS_DIR . 'css/cpht-public.css';
-	$css_file_url = CPHT_PLUGIN_ASSETS_URL . 'css/cpht-public.css';
-	$css_version = cpht_get_asset_version($css_file_path);
+	// Auto-detect and load all CSS files from the assets/css directory
+	$css_dir = CPHT_PLUGIN_ASSETS_DIR . 'css/';
+	if (is_dir($css_dir)) {
+		$css_files = glob($css_dir . '*.css');
+		foreach ($css_files as $css_file) {
+			$file_name = basename($css_file, '.css');
+			$css_url = CPHT_PLUGIN_ASSETS_URL . 'css/' . basename($css_file);
+			$css_version = cpht_get_asset_version($css_file);
 
-	wp_enqueue_style(
-		'cpht-public-style',
-		$css_file_url,
-		array(),
-		$css_version
-	);
+			// Determine which CSS files to load based on context
+			if (strpos($file_name, 'public') !== false) {
+				// Always load public CSS on CPHT pages
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			} elseif (strpos($file_name, 'single') !== false && is_singular('cpht_post')) {
+				// Only load single CSS on single post pages
+				wp_enqueue_style('cpht-' . $file_name, $css_url, array(), $css_version);
+			}
+		}
+	}
 
-	// JavaScript
-	$js_file_path = CPHT_PLUGIN_ASSETS_DIR . 'js/cpht-public.js';
-	$js_file_url = CPHT_PLUGIN_ASSETS_URL . 'js/cpht-public.js';
-	$js_version = cpht_get_asset_version($js_file_path);
+	// Auto-detect and load JS files
+	$js_dir = CPHT_PLUGIN_ASSETS_DIR . 'js/';
+	if (is_dir($js_dir)) {
+		$js_files = glob($js_dir . '*.js');
+		foreach ($js_files as $js_file) {
+			$file_name = basename($js_file, '.js');
+			$js_url = CPHT_PLUGIN_ASSETS_URL . 'js/' . basename($js_file);
+			$js_version = cpht_get_asset_version($js_file);
 
-	wp_enqueue_script(
-		'cpht-public-script',
-		$js_file_url,
-		array('jquery'),
-		$js_version,
-		true
-	);
+			// Load JS files based on context
+			if (strpos($file_name, 'public') !== false) {
+				// Add Ajax URL for the script
+				wp_enqueue_script('cpht-' . $file_name, $js_url, array('jquery'), $js_version, true);
+				wp_localize_script('cpht-' . $file_name, 'cpht_params', array(
+					'ajax_url' => admin_url('admin-ajax.php'),
+				));
+			}
+		}
+	}
 }
 
 /**
@@ -290,6 +333,12 @@ function cpht_plugin_init() {
 		$plugin->run();
 	} else {
 		cpht_plugin_log('CPHT_Plugin class not found', 'error');
+	}
+
+	// Initialize help documentation if we're in admin
+	if (is_admin() && class_exists('CPHT_Help')) {
+		CPHT_Help::get_instance();
+		cpht_plugin_log('CPHT Help documentation initialized');
 	}
 
 	// Register admin scripts and styles

@@ -23,15 +23,18 @@ if (!defined('ABSPATH')) {
     <!-- Filter Section -->
 	<?php if (!empty($categories)) : ?>
         <div class="cpht-filter-section">
-            <div class="cpht-filter-wrapper">
-                <select id="cpht-category-filter" class="cpht-filter-select" data-nonce="<?php echo wp_create_nonce('cpht_filter_nonce'); ?>">
-                    <option value="">Filter by Category</option>
-					<?php foreach ($categories as $category) : ?>
-                        <option value="<?php echo esc_attr($category->slug); ?>" <?php selected($category_filter, $category->slug); ?>>
-							<?php echo esc_html($category->name); ?>
-                        </option>
-					<?php endforeach; ?>
-                </select>
+            <div class="cpht-filter-container">
+                <div class="cpht-filter-label">FILTER STORIES</div>
+                <div class="cpht-filter-wrapper">
+                    <select id="cpht-category-filter" class="cpht-filter-select" data-nonce="<?php echo wp_create_nonce('cpht_filter_nonce'); ?>">
+                        <option value="">Filter by Category</option>
+						<?php foreach ($categories as $category) : ?>
+                            <option value="<?php echo esc_attr($category->slug); ?>" <?php selected($category_filter, $category->slug); ?>>
+								<?php echo esc_html($category->name); ?>
+                            </option>
+						<?php endforeach; ?>
+                    </select>
+                </div>
             </div>
         </div>
 	<?php endif; ?>
@@ -57,7 +60,7 @@ if (!defined('ABSPATH')) {
                                 <div class="cpht-card-content">
 									<?php if (!empty($date)) : ?>
                                         <div class="cpht-card-date">
-                                            <span class="cpht-label">Date:</span> <?php echo esc_html($date); ?>
+											<?php echo esc_html($date); ?>
                                         </div>
 									<?php endif; ?>
                                     <h3 class="cpht-card-title">
@@ -65,7 +68,7 @@ if (!defined('ABSPATH')) {
                                     </h3>
 									<?php if (!empty($excerpt)) : ?>
                                         <div class="cpht-card-excerpt">
-                                            <span class="cpht-label">Excerpt:</span> <?php echo esc_html($excerpt); ?>
+											<?php echo esc_html($excerpt); ?>
                                         </div>
 									<?php endif; ?>
                                 </div>

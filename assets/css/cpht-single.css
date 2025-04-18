@@ -1,0 +1,252 @@
+/**
+ * CPHT Plugin - Single Post CSS Styles
+ *
+ * Styles for the CPHT Posts single post template display
+ */
+
+/* ----------------------------------------
+   1. CSS VARIABLES (CUSTOM PROPERTIES)
+   ---------------------------------------- */
+:root {
+    /* Spacing values */
+    --cpht-spacing-xs: 5px;
+    --cpht-spacing-sm: 10px;
+    --cpht-spacing-md: 20px;
+    --cpht-spacing-lg: 30px;
+    --cpht-spacing-xl: 40px;
+
+    /* Colors - Update with brand colors */
+    --cpht-primary-color: #0073aa;       /* Primary accent color */
+    --cpht-secondary-color: #f7941d;     /* Secondary accent color */
+    --cpht-text-color: #333;             /* Main text color */
+    --cpht-light-text: #666;             /* Secondary text color */
+    --cpht-bg-color: #fff;               /* Card background */
+    --cpht-border-color: #eaeaea;        /* Border color */
+    --cpht-hover-color: #f8f8f8;         /* Hover state background */
+
+    /* Typography */
+    --cpht-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --cpht-font-size-sm: 0.875rem;
+    --cpht-font-size-base: 1rem;
+    --cpht-font-size-md: 1.125rem;
+    --cpht-font-size-lg: 1.25rem;
+    --cpht-line-height: 1.6;
+}
+
+/* ----------------------------------------
+   2. GENERAL CONTAINER STYLES
+   ---------------------------------------- */
+.cpht-single-post {
+    margin-bottom: var(--cpht-spacing-lg);
+    font-family: var(--cpht-font-family);
+    color: var(--cpht-text-color);
+    line-height: var(--cpht-line-height);
+}
+
+/* ----------------------------------------
+   3. HEADER SECTION
+   ---------------------------------------- */
+.cpht-post-header {
+    margin-bottom: var(--cpht-spacing-xl); /* Increased spacing */
+    padding-bottom: var(--cpht-spacing-md);
+}
+
+/* Breadcrumb styling */
+.cpht-breadcrumbs a,
+.cpht-breadcrumbs span,
+.cpht-breadcrumbs .breadcrumb_last,
+.cpht-breadcrumbs .cpht-breadcrumb-divider {
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.cpht-breadcrumbs a:hover {
+    text-decoration: underline;
+    opacity: 0.9;
+}
+
+/* ----------------------------------------
+   4. EXCERPT SECTION
+   ---------------------------------------- */
+.cpht-post-excerpt-section {
+    padding: var(--cpht-spacing-md) 0;
+    margin-bottom: var(--cpht-spacing-md);
+    border-bottom: 1px solid var(--cpht-border-color);
+}
+
+.cpht-post-excerpt {
+    font-size: var(--cpht-font-size-md);
+    line-height: 1.5;
+}
+
+.cpht-label {
+    font-weight: bold;
+    color: var(--cpht-primary-color);
+}
+
+/* ----------------------------------------
+   5. DATE SECTION
+   ---------------------------------------- */
+.cpht-post-date-section {
+    margin-bottom: var(--cpht-spacing-md);
+}
+
+.cpht-post-date {
+    font-size: var(--cpht-font-size-base);
+    color: var(--cpht-light-text);
+}
+
+/* ----------------------------------------
+   6. CONTENT SECTION
+   ---------------------------------------- */
+.cpht-post-content-section {
+    margin-bottom: var(--cpht-spacing-lg);
+}
+
+.cpht-post-content-row {
+    margin-bottom: var(--cpht-spacing-md);
+}
+
+.cpht-post-content-row p {
+    margin-bottom: var(--cpht-spacing-md);
+}
+
+.cpht-post-content-row h1,
+.cpht-post-content-row h2,
+.cpht-post-content-row h3,
+.cpht-post-content-row h4 {
+    margin-top: var(--cpht-spacing-lg);
+    margin-bottom: var(--cpht-spacing-sm);
+    color: var(--cpht-primary-color);
+}
+
+/* Special styling for blockquotes */
+.cpht-blockquote {
+    padding: var(--cpht-spacing-md);
+    margin: var(--cpht-spacing-md) 0;
+    border-left: 4px solid var(--cpht-secondary-color);
+    background-color: var(--cpht-hover-color);
+    font-style: italic;
+}
+
+.cpht-blockquote p {
+    margin-bottom: var(--cpht-spacing-sm);
+}
+
+.cpht-blockquote cite {
+    display: block;
+    font-style: normal;
+    font-weight: bold;
+    color: var(--cpht-light-text);
+    font-size: var(--cpht-font-size-sm);
+    text-align: right;
+}
+
+
+/* ----------------------------------------
+   7. NAVIGATION
+   ---------------------------------------- */
+.cpht-post-navigation {
+    margin: var(--cpht-spacing-lg) 0;
+    padding: var(--cpht-spacing-md) 0;
+    border-top: 1px solid var(--cpht-border-color);
+    border-bottom: 1px solid var(--cpht-border-color);
+}
+
+.cpht-nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.cpht-nav-button {
+    flex: 0 0 30%;
+    max-width: 30%;
+    text-align: center;
+}
+
+.cpht-nav-previous {
+    text-align: left;
+}
+
+.cpht-nav-next {
+    text-align: right;
+}
+
+.cpht-nav-button a {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #f98e2b; /* Orange button color */
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    text-align: center;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 25px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    min-height: 60px;
+    line-height: 1.2;
+}
+
+.cpht-nav-button a:hover {
+    background-color: rgba(255, 255, 255, 0.64);
+    border: 1px solid #f98e2b;
+    color: #f98e2b;
+    transform: translateY(-2px);
+}
+
+/* ----------------------------------------
+   8. RESPONSIVE STYLES
+   ---------------------------------------- */
+@media screen and (max-width: 768px) {
+    .cpht-nav-button {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: var(--cpht-spacing-sm);
+        text-align: center;
+    }
+
+    .cpht-nav-previous,
+    .cpht-nav-next {
+        text-align: center;
+    }
+
+    .cpht-nav-button {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: var(--cpht-spacing-sm);
+        text-align: center;
+    }
+
+    .cpht-nav-previous,
+    .cpht-nav-next {
+        text-align: center;
+    }
+
+    .cpht-nav-button a {
+        font-size: 20px;
+        min-height: 50px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .cpht-post-excerpt {
+        font-size: var(--cpht-font-size-base);
+    }
+
+    .cpht-post-content-row h1,
+    .cpht-post-content-row h2 {
+        font-size: var(--cpht-font-size-lg);
+    }
+
+    .cpht-blockquote {
+        padding: var(--cpht-spacing-sm);
+        margin: var(--cpht-spacing-sm) 0;
+    }
+}
