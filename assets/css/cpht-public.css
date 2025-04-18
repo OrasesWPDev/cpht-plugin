@@ -72,7 +72,9 @@
     text-transform: uppercase;
     background-color: #f98e2b; /* Orange background */
     color: white; /* White text */
-    padding: 12px 15px; /* Increased padding to match the dropdown height */
+
+    padding: 10px 15px; /* Increased padding to match the dropdown height */
+
     flex-shrink: 0; /* Prevent label from shrinking */
     margin: 0; /* Remove any default margins */
     display: inline-block; /* Changed from flex to inline-block */
@@ -83,6 +85,7 @@
     width: 300px; /* Wider dropdown - adjust as needed */
     max-width: 100%; /* Prevent overflow on mobile */
     margin: 0; /* Remove any default margins */
+   height: 46px;
 }
 
 .cpht-filter-select {
@@ -221,9 +224,9 @@
 }
 
 .cpht-card-excerpt {
-    font-size: var(--cpht-font-size-base);
+    font-size: 1.1rem;
     margin-top: auto; /* Pushes excerpt to bottom of card */
-    color: var(--cpht-light-text);
+    color: #353434;
 }
 
 /* ----------------------------------------
@@ -254,7 +257,8 @@
 
 /* Remove underline from card title */
 .cpht-card-title {
-    color: var(--cpht-text-color);
+    color: #007d89;
+	font-size: 1.5rem;
 }
 
 
@@ -279,14 +283,14 @@
 }
 
 .cpht-pagination .page-numbers.current {
-    background-color: var(--cpht-primary-color);
+    background-color: #f98e2b;
     color: white;
-    border-color: var(--cpht-primary-color);
+    border-color: #f98e2b;
 }
 
 .cpht-pagination .page-numbers:not(.current):hover {
-    background-color: var(--cpht-hover-color);
-    border-color: var(--cpht-primary-color);
+    background-color: #fff;
+    border-color: #f98e2b;
 }
 
 /* ----------------------------------------
@@ -418,3 +422,4 @@
         width: 250px; /* Slightly narrower on mobile but still wider than original */
     }
 }
+
